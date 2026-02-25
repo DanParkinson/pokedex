@@ -8,7 +8,8 @@ DB_PATH = Path("data/pokedex.duckdb")
 logger = get_logger(__name__)
 
 def init_db():
-    duckdb.connect(str(DB_PATH))
+    conn = duckdb.connect(str(DB_PATH))
+    return conn
     
 
 if __name__ == "__main__":
