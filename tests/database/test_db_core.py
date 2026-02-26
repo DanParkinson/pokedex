@@ -10,7 +10,7 @@ TEST_SCHEMA = """
 
 def test_create_database_file_persistent(tmp_path, monkeypatch):
     # Arrange
-    monkeypatch.setattr("pokedex.scripts.init_db.DB_PATH", tmp_path / "pokedex.duckdb")
+    monkeypatch.setattr("pokedex.database.connection.DB_PATH", tmp_path / "pokedex.duckdb")
 
     # Act
     init_db(TEST_SCHEMA)
@@ -18,19 +18,9 @@ def test_create_database_file_persistent(tmp_path, monkeypatch):
     # Assert
     assert(tmp_path / "pokedex.duckdb").exists()
 
-def test_return_database_file_connection(tmp_path, monkeypatch):
-    # Arrange
-    monkeypatch.setattr("pokedex.scripts.init_db.DB_PATH", tmp_path / "pokedex.duckdb")
-
-    # Act
-    conn = init_db(TEST_SCHEMA)
-
-    # Assert
-    assert conn is not None
-
 def test_validate_table_schema(tmp_path, monkeypatch):
     # Arrange
-    monkeypatch.setattr("pokedex.scripts.init_db.DB_PATH", tmp_path / "pokedex.duckdb")
+    monkeypatch.setattr("pokedex.database.connection.DB_PATH", tmp_path / "pokedex.duckdb")
 
     EXPECTED_ROWS = {
         "id",

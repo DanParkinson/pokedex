@@ -1,15 +1,12 @@
-import duckdb
-from pathlib import Path
-
-from pokedex.database.schema import SCHEMA_SQL
 from pokedex.utils.logger import get_logger
 
-DB_PATH = Path("data/pokedex.duckdb")
+from pokedex.database.schema import SCHEMA_SQL
+from pokedex.database.connection import get_connection
 
 logger = get_logger(__name__)
 
 def init_db(schema: str):
-    conn = duckdb.connect(str(DB_PATH))
+    conn = get_connection()
     conn.execute(schema)
     return conn
     
