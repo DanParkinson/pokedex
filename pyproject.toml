@@ -20,3 +20,9 @@ line-length = 88
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.uv]
+package = true
+
+[project.scripts]
+init_db = "pokedex.scripts.init_db:main"
