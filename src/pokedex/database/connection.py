@@ -7,5 +7,6 @@ logger = get_logger(__name__)
 
 DB_PATH = Path("data/pokedex.duckdb")
 
+
 def get_connection() -> duckdb.DuckDBPyConnection:
     return duckdb.connect(str(DB_PATH))

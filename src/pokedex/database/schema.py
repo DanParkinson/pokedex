@@ -1,7 +1,6 @@
 EXPECTED_TABLES = {
-    'pokemon',
+    "pokemon",
 }
-
 
 
 SCHEMA_SQL = """
@@ -10,6 +9,6 @@ CREATE TABLE IF NOT EXISTS pokemon (
     name TEXT NOT NULL,
     base_experience INTEGER,
     weight INTEGER,
-    height INTEGER    
+    height INTEGER
 );
 """
