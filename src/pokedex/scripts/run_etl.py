@@ -5,7 +5,7 @@ BASE_URL = "https://pokeapi.co/api/v2"
 
 def main():
     pokemon_data = extract_pokemon("pokemon")
-    print(pokemon_data[1:6])
+    print(pokemon_data[0])  # full json data for pokemon
 
 
 if __name__ == "__main__":
