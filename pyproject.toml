@@ -17,6 +17,7 @@ dependencies = [
 pythonpath = ["."]
 
 [tool.ruff]
+select = ["E", "F", "I", "TID"]
 line-length = 88
 
 [tool.ruff.format]

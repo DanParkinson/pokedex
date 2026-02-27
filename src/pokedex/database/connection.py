@@ -1,8 +1,9 @@
-import duckdb
 from pathlib import Path
 
-from pokedex.utils.logger import get_logger
+import duckdb
+
 from pokedex.errors import DatabaseConnectionError
+from pokedex.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

@@ -1,8 +1,8 @@
-import pytest
 import duckdb
+import pytest
 
-from pokedex.scripts.init_db import main as init_db
 from pokedex.database.connection import get_connection
+from pokedex.scripts.init_db import main as init_db
 
 
 # ===================

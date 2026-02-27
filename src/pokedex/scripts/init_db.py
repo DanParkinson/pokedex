@@ -1,10 +1,8 @@
-from pokedex.utils.logger import get_logger
-from pokedex.errors import DatabaseError
-
-from pokedex.database.schema import SCHEMA_SQL
 from pokedex.database.connection import get_connection
 from pokedex.database.migrate import apply_schema
-
+from pokedex.database.schema import SCHEMA_SQL
+from pokedex.errors import DatabaseError
+from pokedex.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
