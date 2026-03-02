@@ -6,10 +6,8 @@ logger = get_logger(__name__)
 
 
 def load_data_batch(data: list[dict]) -> None:
-    logger.info("Loading data into Database...")
     for row in data:
         load_data(row)
-    logger.info("Loaded data into database.")
 
 
 def load_data(row: dict) -> None:

@@ -6,10 +6,8 @@ logger = get_logger(__name__)
 
 def parse_resource_batch(responses: list[dict]) -> list[dict]:
     data = []
-    logger.info("Transforming data...")
     for response in responses:
         data.append(parse_resource(response))
-    logger.info("Data transformed successfully")
     return data
 
 
