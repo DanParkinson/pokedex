@@ -29,3 +29,4 @@ package = true
 
 [project.scripts]
 init_db = "pokedex.scripts.init_db:main"
+run_etl = "pokedex.scripts.run_etl:main"
