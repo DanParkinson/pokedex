@@ -18,8 +18,8 @@ def main(resource: str, resource_id: str = None) -> None:
         batch = response["results"]
 
         raw = extract_data(response)
-        data = parse_resource_batch(raw)
-        load_data_batch(data)
+        data = parse_resource_batch(raw, resource)
+        load_data_batch(data, resource)
 
         parsed = parsed + len(batch)
         logger.info(f"Loaded {parsed}/{total} {resource}")

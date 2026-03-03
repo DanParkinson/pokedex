@@ -22,12 +22,13 @@ def test_run_etl_paginates_with_next_page(caplog):
         patch(
             "pokedex.scripts.run_etl.extract_data", side_effect=lambda r: r["results"]
         ),
-        patch("pokedex.scripts.run_etl.parse_resource_batch", side_effect=lambda r: r),
+        patch(
+            "pokedex.scripts.run_etl.parse_resource_batch", side_effect=lambda r, *_: r
+        ),
         patch("pokedex.scripts.run_etl.load_data_batch") as load_mock,
     ):
         main("pokemon")
 
-    # Should load 2 batches (page1 + page2)
     assert load_mock.call_count == 2
 
 
@@ -44,13 +45,12 @@ def test_run_etl_stops_when_next_page_none():
         patch(
             "pokedex.scripts.run_etl.extract_data", side_effect=lambda r: r["results"]
         ),
-        patch("pokedex.scripts.run_etl.parse_resource_batch", side_effect=lambda r: r),
+        patch(
+            "pokedex.scripts.run_etl.parse_resource_batch", side_effect=lambda r, *_: r
+        ),
         patch("pokedex.scripts.run_etl.load_data_batch") as load_mock,
     ):
         main("pokemon")
 
-    # Only one batch loaded
     assert load_mock.call_count == 1
-
-    # fetch_json should never be called
     fetch_mock.assert_not_called()

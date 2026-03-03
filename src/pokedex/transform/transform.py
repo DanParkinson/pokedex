@@ -1,28 +1,21 @@
-from pokedex.database.contracts import REQUIRED_FIELDS_POKEMON
+from pokedex.database.contracts import RESOURCE_CONTRACTS
 from pokedex.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 
-def parse_resource_batch(responses: list[dict]) -> list[dict]:
-    data = []
-    for response in responses:
-        data.append(parse_resource(response))
-    return data
+def parse_resource_batch(responses: list[dict], resource: str) -> list[dict]:
+    return [parse_resource(response, resource) for response in responses]
 
 
-def parse_resource(response: str) -> dict:
-    required = REQUIRED_FIELDS_POKEMON
+def parse_resource(response: str, resource: str) -> dict:
+    contract = RESOURCE_CONTRACTS[resource]
+    required = contract["required"]
+    desired = contract["desired"]
 
     for key in required:
         if key not in response:
             logger.error(f"Missing required field: {key}")
             raise KeyError
-    data = {
-        "id": response["id"],
-        "name": response["name"],
-        "base_experience": response["base_experience"],
-        "weight": response["weight"],
-        "height": response["height"],
-    }
-    return data
+
+    return desired(response)
