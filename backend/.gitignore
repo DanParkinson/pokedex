@@ -20,8 +20,8 @@ data/logs/
 
 # Database files
 data/*.duckdb
+backend/data/*.duckdb
 backend/src/data/*.duckdb
-# or: **/data/*.duckdb
 
 
 # OS
