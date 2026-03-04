@@ -1,17 +1,15 @@
 from pokedex.database.connection import get_connection
-from pokedex.database.contracts import RESOURCE_CONTRACTS
 from pokedex.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 
-def load_data_batch(data: list[dict], resource: str | None = None) -> None:
+def load_data_batch(data: list[dict], contract: dict) -> None:
     for row in data:
-        load_data(row, resource)
+        load_data(row, contract)
 
 
-def load_data(row: dict, resource: str | None = None) -> None:
-    contract = RESOURCE_CONTRACTS[resource]
+def load_data(row: dict, contract: dict) -> None:
     required = contract["output_fields"]
 
     # Validate
@@ -21,7 +19,7 @@ def load_data(row: dict, resource: str | None = None) -> None:
             raise KeyError
 
     # Build SQL
-    table = resource
+    table = contract["table"]
     columns = list(row.keys())
     placeholders = ", ".join(["?"] * len(columns))
     colnames = ", ".join(columns)
@@ -38,6 +36,8 @@ def load_data(row: dict, resource: str | None = None) -> None:
         conn.execute("BEGIN")
         conn.execute(sql, [row[c] for c in columns])
         conn.execute("COMMIT")
+        print(f"Inserted into {table}: {row}")
+
     except Exception:
         conn.execute("ROLLBACK")
         raise

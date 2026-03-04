@@ -7,6 +7,12 @@ logger = get_logger(__name__)
 BASE_URL = "https://pokeapi.co/api/v2"
 
 
+def api_entry_point(resource: str, resource_id: str = None):
+    logger.info(f"Beginning Extraction of {resource} data...")
+    url = build_resource_url(resource, resource_id)
+    return fetch_json(url)
+
+
 def extract_data(response) -> list[dict]:
     urls = extract_response_urls(response)
     data = []
@@ -14,12 +20,6 @@ def extract_data(response) -> list[dict]:
         response = fetch_json(url)
         data.append(response)
     return data
-
-
-def api_entry_point(resource: str, resource_id: str = None):
-    logger.info(f"Beginning Extraction of {resource} data...")
-    url = build_resource_url(resource, resource_id)
-    return fetch_json(url)
 
 
 # ==========

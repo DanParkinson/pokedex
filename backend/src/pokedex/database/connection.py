@@ -7,7 +7,8 @@ from pokedex.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-DB_PATH = Path("data/pokedex.duckdb")
+ROOT = Path(__file__).resolve().parents[2]
+DB_PATH = ROOT / "data" / "pokedex.duckdb"
 
 
 def get_connection() -> duckdb.DuckDBPyConnection:
