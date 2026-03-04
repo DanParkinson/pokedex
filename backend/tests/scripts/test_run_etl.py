@@ -1,56 +1,86 @@
-from unittest.mock import patch
-
+from pokedex.database.contracts import RESOURCE_CONTRACTS
 from pokedex.scripts.run_etl import main
 
 
-def test_run_etl_paginates_with_next_page(caplog):
-    first_page = {
+def test_run_etl_main_runs_full_pipeline(monkeypatch):
+    # Arrange
+    page1 = {
         "count": 4,
-        "next": "http://api/page2",
-        "results": [{"name": "a"}, {"name": "b"}],
+        "next": "http://next-page",
+        "results": [{"url": "a"}, {"url": "b"}],
     }
 
-    second_page = {
+    page2 = {
         "count": 4,
         "next": None,
-        "results": [{"name": "c"}, {"name": "d"}],
+        "results": [{"url": "c"}, {"url": "d"}],
     }
 
-    with (
-        patch("pokedex.scripts.run_etl.api_entry_point", return_value=first_page),
-        patch("pokedex.scripts.run_etl.fetch_json", side_effect=[second_page]),
-        patch(
-            "pokedex.scripts.run_etl.extract_data", side_effect=lambda r: r["results"]
-        ),
-        patch(
-            "pokedex.scripts.run_etl.parse_resource_batch", side_effect=lambda r, *_: r
-        ),
-        patch("pokedex.scripts.run_etl.load_data_batch") as load_mock,
-    ):
-        main("pokemon")
+    monkeypatch.setattr(
+        "pokedex.scripts.run_etl.api_entry_point",
+        lambda resource, resource_id: page1,
+    )
 
-    assert load_mock.call_count == 2
+    monkeypatch.setattr(
+        "pokedex.scripts.run_etl.fetch_json",
+        lambda url: page2,
+    )
 
+    monkeypatch.setattr(
+        "pokedex.scripts.run_etl.extract_data",
+        lambda response: response["results"],
+    )
 
-def test_run_etl_stops_when_next_page_none():
-    single_page = {
-        "count": 2,
-        "next": None,
-        "results": [{"name": "a"}, {"name": "b"}],
-    }
+    parse_calls = []
 
-    with (
-        patch("pokedex.scripts.run_etl.api_entry_point", return_value=single_page),
-        patch("pokedex.scripts.run_etl.fetch_json") as fetch_mock,
-        patch(
-            "pokedex.scripts.run_etl.extract_data", side_effect=lambda r: r["results"]
-        ),
-        patch(
-            "pokedex.scripts.run_etl.parse_resource_batch", side_effect=lambda r, *_: r
-        ),
-        patch("pokedex.scripts.run_etl.load_data_batch") as load_mock,
-    ):
-        main("pokemon")
+    def fake_parse(raw, contract):
+        parse_calls.append((tuple(raw), contract["table"]))
+        return [{"parsed": True} for _ in raw]
 
-    assert load_mock.call_count == 1
-    fetch_mock.assert_not_called()
+    monkeypatch.setattr(
+        "pokedex.scripts.run_etl.parse_resource_batch",
+        fake_parse,
+    )
+
+    load_calls = []
+
+    def fake_load(rows, contract):
+        load_calls.append((len(rows), contract["table"]))
+
+    monkeypatch.setattr(
+        "pokedex.scripts.run_etl.load_data_batch",
+        fake_load,
+    )
+
+    # Act
+    main("pokemon")
+
+    # Assert
+    # Number of pokemon-related contracts
+    pokemon_contracts = [
+        c for c in RESOURCE_CONTRACTS.values() if c["resource"] == "pokemon"
+    ]
+    num_contracts = len(pokemon_contracts)
+
+    # parse_resource_batch called once per contract per page
+    assert len(parse_calls) == num_contracts * 2
+
+    # load_data_batch called once per contract per page
+    assert len(load_calls) == num_contracts * 2
+
+    # First page raw rows
+    first_raw = ({"url": "a"}, {"url": "b"})
+    # Second page raw rows
+    second_raw = ({"url": "c"}, {"url": "d"})
+
+    # Check first page calls
+    for i in range(num_contracts):
+        assert parse_calls[i][0] == first_raw
+
+    # Check second page calls
+    for i in range(num_contracts, num_contracts * 2):
+        assert parse_calls[i][0] == second_raw
+
+    # Check load row counts
+    for count, table in load_calls:
+        assert count == 2

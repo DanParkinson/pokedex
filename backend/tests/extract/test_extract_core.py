@@ -2,37 +2,12 @@ import pytest
 import requests
 
 from pokedex.extract.extract import (
+    api_entry_point,
     build_resource_url,
+    extract_data,
     extract_response_urls,
     fetch_json,
 )
-
-
-# ============
-# Build URLS
-# ============
-def test_build_resource_url_builds_url_without_resource_id():
-    # Arrange
-    resource = "pokemon"
-    expected_url = "https://pokeapi.co/api/v2/pokemon"
-
-    # Act
-    url = build_resource_url(resource)
-
-    # Assert
-    assert url == expected_url
-
-
-def test_build_resource_url_builds_url_with_resource_id():
-    resource = "pokemon"
-    resource_id = "1"
-    expected_url = "https://pokeapi.co/api/v2/pokemon/1"
-
-    # Act
-    url = build_resource_url(resource, resource_id)
-
-    # Assert
-    assert url == expected_url
 
 
 # ============
@@ -63,7 +38,7 @@ def test_fetch_json_raises_on_http_error(requests_mock):
 # ===========
 # Listings
 # ===========
-def test_extract_repsonse_urls_returns_urlS():
+def test_extract_repsonse_urls_returns_urls():
     # Arrange
     response = {
         "count": 1281,
@@ -85,3 +60,77 @@ def test_extract_repsonse_urls_returns_urlS():
 
     # Assert
     assert urls == expected
+
+
+# ============
+# Build URLS
+# ============
+def test_build_resource_url_builds_url_without_resource_id():
+    # Arrange
+    resource = "pokemon"
+    expected_url = "https://pokeapi.co/api/v2/pokemon"
+
+    # Act
+    url = build_resource_url(resource)
+
+    # Assert
+    assert url == expected_url
+
+
+def test_build_resource_url_builds_url_with_resource_id():
+    resource = "pokemon"
+    resource_id = "1"
+    expected_url = "https://pokeapi.co/api/v2/pokemon/1"
+
+    # Act
+    url = build_resource_url(resource, resource_id)
+
+    # Assert
+    assert url == expected_url
+
+
+def test_api_entry_point_returns_json(requests_mock):
+    # Arrange
+    resource = "pokemon"
+    resource_id = "1"
+    expected = {"name": "bulbasaur"}
+    url = f"https://pokeapi.co/api/v2/{resource}/{resource_id}"
+    requests_mock.get(url, json=expected)
+
+    # Act
+    result = api_entry_point(resource, resource_id)
+
+    # Assert
+    assert result == expected
+
+
+# ============
+# Extraction
+# ============
+def test_extract_data_returns_list_of_dicts(monkeypatch):
+    # Arrange
+    response = {
+        "results": [
+            {"url": "https://example.com/1"},
+            {"url": "https://example.com/2"},
+        ]
+    }
+
+    expected = [
+        {"id": 1, "value": "a"},
+        {"id": 2, "value": "b"},
+    ]
+
+    # Patch fetch_json to return each dict in order
+    monkeypatch.setattr(
+        "pokedex.extract.extract.fetch_json", lambda url: expected.pop(0)
+    )
+
+    # Act
+    result = extract_data(response)
+
+    # Assert
+    assert result == [
+        {"id": 1, "value": "a"},
+        {"id": 2, "value": "b"},
+    ]

@@ -72,7 +72,7 @@ def test_create_database_file_persistent(patched_db):
 # ====================
 
 
-def test_return_database_file_connection(patched_db):
+def test_get_connection_returns_connection(patched_db):
     # Arrange
     db_file, _ = patched_db
 
