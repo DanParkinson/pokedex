@@ -20,6 +20,9 @@ data/logs/
 
 # Database files
 data/*.duckdb
+backend/src/data/*.duckdb
+# or: **/data/*.duckdb
+
 
 # OS
 .DS_Store
