@@ -9,6 +9,9 @@ logger = get_logger(__name__)
 
 def main(resource: str = "pokemon", resource_id=None):
 
+    # limit for dev
+    limit = 0
+
     contracts = [
         contract
         for contract in RESOURCE_CONTRACTS.values()
@@ -31,10 +34,11 @@ def main(resource: str = "pokemon", resource_id=None):
             load_data_batch(rows, contract)
             logger.info(f"Loaded {len(rows)} rows into {table}")
 
+        limit += 1
         parsed += len(batch)
         logger.info(f"Processed {parsed}/{total} Pokémon")
 
-        if not next_url:
+        if not next_url or limit == 2:
             break
 
         response = fetch_json(next_url)

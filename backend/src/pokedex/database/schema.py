@@ -1,8 +1,3 @@
-EXPECTED_TABLES = {
-    "pokemon",
-    "pokemon_stats",
-}
-
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS pokemon (
     id INTEGER PRIMARY KEY,
