@@ -1,17 +1,17 @@
-from fastapi import FastAPI
+from fastapi import APIRouter
 
-from api.calls import fetch_pokemon_card_basic
-from api.schemas import PokemonCardBasic
+from .calls import fetch_pokemon_card_basic
+from .schemas import PokemonCardBasic
 
-app = FastAPI()
+router = APIRouter()
 
 
-@app.get("/health")
+@router.get("/health")
 def health():
     return {"status": "ok"}
 
 
-@app.get("/pokemon", response_model=list[PokemonCardBasic])
+@router.get("/pokemon", response_model=list[PokemonCardBasic])
 def get_pokemon_card_basic():
     rows = fetch_pokemon_card_basic()
     return [

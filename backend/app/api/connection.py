@@ -2,7 +2,7 @@ from pathlib import Path
 
 import duckdb
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 DB_PATH = ROOT / "backend" / "data" / "pokedex.duckdb"
 
 

@@ -1,4 +1,4 @@
-from api.connection import get_connection_api
+from .connection import get_connection_api
 
 
 def fetch_pokemon_card_basic(limit: int = None):
